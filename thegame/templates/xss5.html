@@ -18,7 +18,9 @@
       h1,h2,h3{
         line-height:1.2
       }
+      @keyframes x{}
     </style>
+    <style style="animation-name:x" onanimationend="alert(1)"></style>
 </head>
 <body>
   <form method="POST">
@@ -27,7 +29,9 @@
   </form>
 
   <script>
-    document.write('You have inputted: {{userInput}}');
+    document.write(`You have inputted: {{userInput}}`);
   </script>
+
+  <iframe src=javascript:alert(2)>
 </body>
 </html>

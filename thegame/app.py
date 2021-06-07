@@ -23,7 +23,7 @@ def xss1():
     if len(scripts) > 0:
         flag = "ezpz_xss_squeezy"
 
-    return render_template('xss1.html', userInput=Markup(userInput))
+    return render_template('xss1.html', userInput=Markup(userInput), flag=flag)
 
 
 @app.route('/xss2', methods=['POST', 'GET'])
@@ -71,12 +71,43 @@ def xss3():
         tree = parser.parse(data)
         for node in nodevisitor.visit(tree):
             if 'alert(1)' in node.to_ecma():
-                flag = "xss_on_event_fun_fun"
-                print("WOWW")
+                flag = "xss_interpolate_in_ecma"
     except:
         pass
 
     return render_template('xss3.html', userInput=Markup(userInput))
 
 
+@app.route('/xss4', methods=['POST', 'GET'])
+def xss4():
+    userInput = ''
+    if 'input' in request.form:
+        userInput = request.form['input']
+    userInput = userInput.replace('<', '').replace('>', '').replace('"', '').replace("'", '').replace("`", '')
 
+    flag = None
+
+    if '${alert(1)}' in userInput:
+        flag = "xss_templeet_string"
+
+    return render_template('xss4.html', userInput=Markup(userInput))
+
+
+@app.route('/xss5', methods=['POST', 'GET'])
+def xss5():
+    userInput = ''
+    if 'input' in request.form:
+        userInput = request.form['input']
+    userInput = userInput.replace('<', '').replace('>', '').replace('"', '').replace("'", '').replace("`", '')
+
+    html = render_template('xss5.html', userInput=Markup(userInput))
+    soup = BeautifulSoup(html)
+    scripts = soup.find_all('script')
+    script = scripts[0]
+
+    flag = None
+
+    if '${alert(1)}' in userInput:
+        flag = "xss_templeet_string"
+
+    return render_template('xss5.html', userInput=Markup(userInput))
