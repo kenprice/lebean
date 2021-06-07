@@ -72,7 +72,7 @@ def xss3():
         tree = parser.parse(data)
         for node in nodevisitor.visit(tree):
             if 'alert(1)' in node.to_ecma():
-                flag = "xss_interpolate_in_ecma"
+                flag = "xss_sneaky_clever_fren"
     except:
         pass
 
