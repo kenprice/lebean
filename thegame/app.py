@@ -6,10 +6,11 @@ from bs4 import BeautifulSoup
 from slimit import ast
 from slimit.parser import Parser
 from slimit.visitors import nodevisitor
+import re
 
 app = Flask(__name__)
 
-@app.route('/xss1', methods=['POST', 'GET'])
+@app.route('/', methods=['POST', 'GET'])
 def xss1():
     userInput = ''
     if 'input' in request.form:
@@ -48,7 +49,7 @@ def xss2():
             if 'alert(1)' in node.to_ecma():
                 flag = "xss_on_event_fun_fun"
 
-    return render_template('xss2.html', userInput=Markup(userInput))
+    return render_template('xss2.html', userInput=Markup(userInput), flag=flag)
 
 
 @app.route('/xss3', methods=['POST', 'GET'])
@@ -75,7 +76,7 @@ def xss3():
     except:
         pass
 
-    return render_template('xss3.html', userInput=Markup(userInput))
+    return render_template('xss3.html', userInput=Markup(userInput), flag=flag)
 
 
 @app.route('/xss4', methods=['POST', 'GET'])
@@ -86,11 +87,19 @@ def xss4():
     userInput = userInput.replace('<', '').replace('>', '').replace('"', '').replace("'", '').replace("`", '')
 
     flag = None
+    parser = Parser()
 
-    if '${alert(1)}' in userInput:
-        flag = "xss_templeet_string"
+    try:
+        matches = re.findall("\$\{(.*)?\}", userInput)
+        for match in matches:
+            tree = parser.parse(match)
+            for node in nodevisitor.visit(tree):
+                if 'alert(1)' in node.to_ecma():
+                    flag = "xss_templeet_string"
+    except:
+        pass
 
-    return render_template('xss4.html', userInput=Markup(userInput))
+    return render_template('xss4.html', userInput=Markup(userInput), flag=flag)
 
 
 @app.route('/xss5', methods=['POST', 'GET'])
@@ -98,16 +107,20 @@ def xss5():
     userInput = ''
     if 'input' in request.form:
         userInput = request.form['input']
-    userInput = userInput.replace('<', '').replace('>', '').replace('"', '').replace("'", '').replace("`", '')
-
-    html = render_template('xss5.html', userInput=Markup(userInput))
-    soup = BeautifulSoup(html)
-    scripts = soup.find_all('script')
-    script = scripts[0]
 
     flag = None
+    parser = Parser()
 
-    if '${alert(1)}' in userInput:
-        flag = "xss_templeet_string"
+    try:
+        userInput = userInput.strip()
+        data = ''
+        if userInput.startswith('javascript:'):
+            data = userInput[11:]
+        tree = parser.parse(data)
+        for node in nodevisitor.visit(tree):
+            if 'alert(1)' in node.to_ecma():
+                flag = "iframe_shenanigans_xss"
+    except:
+        pass
 
-    return render_template('xss5.html', userInput=Markup(userInput))
+    return render_template('xss5.html', userInput=userInput, flag=flag)
