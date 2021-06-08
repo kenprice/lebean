@@ -1,4 +1,4 @@
-# Hello, Friend!
+#Hello, Friend!
 
 Introducing...
 
@@ -51,3 +51,15 @@ Flag: `flag{xss_templeet_string}`
 Solution: `javascript:alert(1)`
 
 Flag: `flag{iframe_shenanigans_xss}`
+
+## Docker
+
+Wow look at you, using docker. Smart friend, you are. ;)
+
+```
+docker build -t lebean .
+docker run -p 5000:5000 lebean
+```
+
+Have fun, friends!
+
