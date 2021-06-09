@@ -1,10 +1,12 @@
-#Hello, Friend!
+# Hello, Friend!
 
 Introducing...
 
 # Le Bean
 
 A warm and wholesome reflected XSS fun for the whole family!
+
+![](screenshot.png)
 
 ## How?
 
